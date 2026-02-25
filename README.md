@@ -113,6 +113,38 @@ Got pflash magic: PFLA
 
 QEMU will automatically exit after printing the message.
 
+## Dependency Compatibility Notes
+
+This project can fail to build if `Cargo.lock` drifts to an incompatible pre-release combination (especially around `ax*` crates).
+
+A known-good set (verified with `cargo xtask run` on `riscv64`) is:
+
+- `axruntime = 0.2.2-preview.2`
+- `axhal = 0.2.2-preview.5`
+- `axplat-riscv64-qemu-virt = 0.3.0-preview.2`
+- `axcpu = 0.3.0-preview.3`
+- `page_table_multiarch = 0.5.8`
+- `page_table_entry = 0.5.8`
+- `axconfig = 0.2.2-preview.1`
+
+Why this matters:
+
+- Newer combinations can produce API mismatches (for example around page table type aliases).
+- `axconfig 0.2.2-preview.2` may lead to wrong platform constants in some setups, causing linker script mismatches.
+
+If you hit dependency-related build errors, re-align versions in `Cargo.lock` (without changing `Cargo.toml`):
+
+```bash
+cargo update -p axruntime --precise 0.2.2-preview.2
+cargo update -p axhal --precise 0.2.2-preview.5
+cargo update -p axplat --precise 0.3.0-preview.2
+cargo update -p axplat-riscv64-qemu-virt --precise 0.3.0-preview.2
+cargo update -p axcpu --precise 0.3.0-preview.3
+cargo update -p page_table_multiarch@0.5.7 --precise 0.5.8
+cargo update -p page_table_entry@0.5.7 --precise 0.5.8
+cargo update -p axconfig --precise 0.2.2-preview.1
+```
+
 ## Project Structure
 
 ```
